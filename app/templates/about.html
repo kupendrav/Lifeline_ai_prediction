@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}About — LIFELINE AI{% endblock %}
+{% block content %}
+<div class="ll-hero" style="padding-bottom:2rem">
+  <div class="ll-hero-inner">
+    <div class="ll-hero-badge">Research · Ethics · Transparency</div>
+    <h1 class="ll-hero-title">About <em>LIFELINE AI</em></h1>
+    <p class="ll-hero-sub">A research-grade longevity intelligence platform built on open epidemiological science.</p>
+  </div>
+</div>
+<div class="ll-results-body">
+  <div class="ll-panel">
+    <h2 class="ll-panel-title"><i class="ti ti-microscope"></i> Scientific Foundation</h2>
+    <p style="font-size:14px;line-height:1.8;color:var(--ll-text);margin-top:1rem">
+      LIFELINE AI aggregates findings from WHO global health statistics, the NHANES longitudinal cohort, the UK Biobank 500,000-participant study, CDC vital statistics, and dozens of peer-reviewed meta-analyses to build a multi-factor longevity prediction model. Every coefficient is traceable to published epidemiological evidence.
+    </p>
+  </div>
+  <div class="ll-panel">
+    <h2 class="ll-panel-title"><i class="ti ti-shield-check"></i> Ethical AI Notice</h2>
+    <p style="font-size:14px;line-height:1.8;color:var(--ll-text);margin-top:1rem">
+      Predictions are population-level probabilistic estimates, not individual medical diagnoses. No user data is sold or shared. Results are for educational and wellness awareness purposes only. Always consult a qualified healthcare professional for medical decisions.
+    </p>
+  </div>
+  <div class="ll-panel">
+    <h2 class="ll-panel-title"><i class="ti ti-chart-line"></i> Model Limitations</h2>
+    <ul class="ll-sources-list" style="margin-top:1rem">
+      <li>Individual genetics, rare diseases, and accidents are not fully captured</li>
+      <li>Predictions carry a ±4.5 year population standard deviation</li>
+      <li>Model is calibrated for adult populations aged 18–100</li>
+      <li>Socioeconomic coefficients are averaged across high-income country profiles</li>
+      <li>Model does not constitute a substitute for clinical assessment</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Analytics — LIFELINE AI{% endblock %}
+{% block content %}
+<div class="ll-main">
+  <h1 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;margin-bottom:1.5rem">
+    Platform <em style="color:var(--ll-gold)">Analytics</em>
+  </h1>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:2rem">
+    <div class="ll-field-card" style="text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:48px;color:var(--ll-gold)">{{ total }}</div>
+      <div style="font-size:12px;color:var(--ll-muted)">Total Predictions</div>
+    </div>
+    <div class="ll-field-card" style="text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:48px;color:var(--ll-gold)">{{ avg_predicted }}</div>
+      <div style="font-size:12px;color:var(--ll-muted)">Avg Predicted Age</div>
+    </div>
+    <div class="ll-field-card" style="text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:48px;color:var(--ll-gold)">{{ avg_score }}</div>
+      <div style="font-size:12px;color:var(--ll-muted)">Avg Longevity Score</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

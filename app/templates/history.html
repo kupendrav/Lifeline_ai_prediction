@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Prediction History — LIFELINE AI{% endblock %}
+{% block content %}
+<div class="ll-main">
+  <h1 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;margin-bottom:1.5rem">
+    Your Prediction <em style="color:var(--ll-gold)">History</em>
+  </h1>
+  {% if predictions %}
+  <div style="display:flex;flex-direction:column;gap:10px">
+    {% for p in predictions %}
+    <div class="ll-field-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:13px;color:var(--ll-muted)">{{ p.created_at[:10] }}</div>
+        <div style="font-size:22px;font-family:'Cormorant Garamond',serif;color:var(--ll-text)">
+          {{ p.predicted_age | int }} years predicted
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="ll-val-badge">Score: {{ p.longevity_score }}/100</span>
+        <a href="{{ url_for('main.results', prediction_id=p.id) }}" class="ll-btn-secondary" style="padding:7px 14px;font-size:12px">View →</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p style="color:var(--ll-muted)">No predictions yet. <a href="{{ url_for('main.index') }}">Make your first prediction →</a></p>
+  {% endif %}
+</div>
+{% endblock %}

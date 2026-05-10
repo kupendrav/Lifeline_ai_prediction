@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Your Longevity Results — LIFELINE AI{% endblock %}
+{% block content %}
+<div class="ll-results-page">
+
+  <!-- HERO RESULT CARD -->
+  <div class="ll-result-hero">
+    <div class="ll-result-hero-inner">
+      <p class="ll-result-label">Estimated Lifespan</p>
+      <div class="ll-result-age">{{ result.predicted_age | int }}</div>
+      <p class="ll-result-unit">years</p>
+      <p class="ll-result-ci">Confidence interval: {{ result.confidence_low | int }}–{{ result.confidence_high | int }} years</p>
+      <div class="ll-result-stats">
+        <div class="ll-stat-card">
+          <span class="ll-stat-val">{{ result.remaining_years | int }}</span>
+          <span class="ll-stat-lbl">Years remaining</span>
+        </div>
+        <div class="ll-stat-card">
+          <span class="ll-stat-val">{{ result.biological_age }}</span>
+          <span class="ll-stat-lbl">Biological age</span>
+        </div>
+        <div class="ll-stat-card">
+          <span class="ll-stat-val">{{ result.longevity_score }}/100</span>
+          <span class="ll-stat-lbl">Longevity score</span>
+        </div>
+        <div class="ll-stat-card">
+          <span class="ll-stat-val">{{ result.percentile }}<sup>th</sup></span>
+          <span class="ll-stat-lbl">Peer percentile</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ll-results-body">
+
+    <!-- DOMAIN RADAR -->
+    <div class="ll-panel">
+      <h3 class="ll-panel-title"><i class="ti ti-chart-radar"></i> Health Domain Analysis</h3>
+      <div class="ll-domain-bars" id="domain-bars">
+        {% for domain, score in result.get('domain_scores', {}).items() %}
+        <div class="ll-bar-item">
+          <div class="ll-bar-header"><span>{{ domain }}</span><span>{{ score }}/100</span></div>
+          <div class="ll-bar-track"><div class="ll-bar-fill" style="width:{{ score }}%" data-domain="{{ domain }}"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- SHAP FACTORS -->
+    <div class="ll-panel">
+      <h3 class="ll-panel-title"><i class="ti ti-chart-bar"></i> SHAP Feature Attribution — Life Years Impact</h3>
+      <p class="ll-panel-sub">Green bars add years · Red bars reduce years (vs. population baseline)</p>
+      <div id="shap-chart-wrap"><canvas id="shap-chart" height="320"></canvas></div>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="ll-panel">
+      <h3 class="ll-panel-title"><i class="ti ti-bulb"></i> Personalised Longevity Insights</h3>
+      <div class="ll-insights">
+        {% for ins in result.insights %}
+        <div class="ll-insight ll-insight--{{ ins.type }}">
+          <span class="ll-insight-icon"><i class="ti {{ ins.icon }}"></i></span>
+          <p>{{ ins.text }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- REASONING -->
+    <div class="ll-panel">
+      <h3 class="ll-panel-title"><i class="ti ti-microscope"></i> Scientific Reasoning</h3>
+      <div class="ll-reasoning">
+        {{ result.reasoning | replace('\n\n', '</p><p>') | safe | replace('^', '<p>') }}
+        <p>{{ result.reasoning | replace('\n\n', '</p><p>') }}</p>
+      </div>
+    </div>
+
+    <!-- SOURCES -->
+    <div class="ll-panel ll-sources-panel">
+      <h3 class="ll-panel-title"><i class="ti ti-books"></i> Research Sources</h3>
+      <ul class="ll-sources-list">
+        <li>WHO Global Health Observatory — Life Tables & Mortality 2023</li>
+        <li>NHANES — National Health and Nutrition Examination Survey (CDC)</li>
+        <li>UK Biobank — Population Cohort Study (500,000 participants)</li>
+        <li>Human Mortality Database — Max Planck Institute / UC Berkeley</li>
+        <li>Global Burden of Disease 2020 — IHME</li>
+        <li>Lancet 2016: BMI and all-cause mortality (Di Angelantonio et al.)</li>
+        <li>JAMA Internal Medicine 2015: Physical activity and mortality (Arem et al.)</li>
+        <li>PLOS Medicine 2010: Social relationships and mortality (Holt-Lunstad et al.)</li>
+        <li>Sleep 2010: Sleep duration meta-analysis (Cappuccio et al.)</li>
+        <li>Lancet 2012: Work stress and CVD (Kivimäki et al.)</li>
+        <li>Lancet 2017: SES and longevity (Stringhini et al.)</li>
+        <li>NEJM 2009: Air pollution and life expectancy (Pope et al.)</li>
+      </ul>
+    </div>
+
+    <div class="ll-actions">
+      <a href="{{ url_for('main.index') }}" class="ll-btn-secondary">
+        <i class="ti ti-refresh"></i> New Prediction
+      </a>
+      <a href="{{ url_for('main.history') }}" class="ll-btn-secondary">
+        <i class="ti ti-history"></i> View History
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const shapData = {{ result.shap_factors | tojson }};
+document.addEventListener('DOMContentLoaded', () => {
+  const entries = Object.entries(shapData).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).slice(0,12);
+  const labels  = entries.map(e=>e[0]);
+  const vals    = entries.map(e=>e[1]);
+  const colors  = vals.map(v=>v>=0?'rgba(45,110,106,0.8)':'rgba(192,84,58,0.8)');
+  new Chart(document.getElementById('shap-chart'), {
+    type:'bar',
+    data:{labels,datasets:[{label:'Life years impact',data:vals,backgroundColor:colors,borderRadius:4}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'Years vs baseline'},grid:{color:'rgba(0,0,0,0.05)'}}},responsive:true}
+  });
+});
+</script>
+{% endblock %}

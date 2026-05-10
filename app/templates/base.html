@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="LIFELINE AI — AI-Powered Human Longevity Intelligence Platform">
+  <title>{% block title %}LIFELINE AI{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="ll-body">
+  <nav class="ll-nav">
+    <div class="ll-nav-inner">
+      <a href="{{ url_for('main.index') }}" class="ll-logo">
+        <span class="ll-logo-icon"><i class="ti ti-dna-2"></i></span>
+        <span class="ll-logo-text">LIFE<em>LINE</em> AI</span>
+      </a>
+      <div class="ll-nav-links">
+        <a href="{{ url_for('main.index') }}" class="ll-nav-link">Predict</a>
+        <a href="{{ url_for('main.history') }}" class="ll-nav-link">History</a>
+        <a href="{{ url_for('analytics.dashboard') }}" class="ll-nav-link">Analytics</a>
+        <a href="{{ url_for('main.about') }}" class="ll-btn-about">About</a>
+      </div>
+    </div>
+  </nav>
+  {% block content %}{% endblock %}
+  <footer class="ll-footer">
+    <p>LIFELINE AI &copy; 2025 &mdash; Research-grade longevity intelligence. Not medical advice.</p>
+    <p class="ll-footer-sources">Sources: WHO · NHANES · UK Biobank · CDC WONDER · Human Mortality Database</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

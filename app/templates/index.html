@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}LIFELINE AI — Longevity Prediction{% endblock %}
+{% block content %}
+<div class="ll-hero">
+  <div class="ll-hero-inner">
+    <div class="ll-hero-badge">Backed by WHO · NHANES · UK Biobank Research</div>
+    <h1 class="ll-hero-title">Decode Your<br><em>Longevity Blueprint</em></h1>
+    <p class="ll-hero-sub">AI-powered lifespan prediction grounded in peer-reviewed epidemiology.<br>18 biomedical factors. Explainable results. Actionable insights.</p>
+    <div class="ll-hero-disclaimer">
+      <i class="ti ti-info-circle"></i>
+      This platform uses population-level epidemiological models. Results are probabilistic estimates, not medical diagnoses. Always consult a qualified healthcare professional.
+    </div>
+  </div>
+</div>
+
+<div class="ll-main">
+  <form id="predict-form" class="ll-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- DEMOGRAPHICS -->
+    <section class="ll-section">
+      <h2 class="ll-section-title"><i class="ti ti-user"></i> Demographics</h2>
+      <div class="ll-grid">
+        <div class="ll-field-card">
+          <label class="ll-label" for="age">Current Age</label>
+          <p class="ll-field-desc">Your chronological age in years.</p>
+          <div class="ll-slider-row">
+            <input type="range" id="age" name="age" min="18" max="100" value="35" class="ll-slider" oninput="syncVal('age','age-v')">
+            <span class="ll-val-badge" id="age-v">35</span>
+          </div>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="sex">Biological Sex</label>
+          <p class="ll-field-desc">Influences baseline life-expectancy (WHO life tables).</p>
+          <select id="sex" name="sex" class="ll-select">
+            <option value="female">Female</option>
+            <option value="male" selected>Male</option>
+            <option value="other">Other / Prefer not to say</option>
+          </select>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="education">Education Level</label>
+          <p class="ll-field-desc">Each added education year ≈ +0.4 yr lifespan (GBD).</p>
+          <select id="education" name="education" class="ll-select">
+            <option value="less_hs">Less than high school</option>
+            <option value="hs">High school diploma</option>
+            <option value="some_college" selected>Some college</option>
+            <option value="bachelors">Bachelor's degree</option>
+            <option value="graduate">Graduate degree</option>
+          </select>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="ses">Socioeconomic Status</label>
+          <p class="ll-field-desc">Low SES → 2.1 yr loss on average (Stringhini, Lancet 2017).</p>
+          <select id="ses" name="ses" class="ll-select">
+            <option value="low">Low income</option>
+            <option value="lower_middle">Lower middle</option>
+            <option value="middle" selected>Middle class</option>
+            <option value="upper_middle">Upper middle</option>
+            <option value="high">High income</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIFESTYLE -->
+    <section class="ll-section">
+      <h2 class="ll-section-title"><i class="ti ti-run"></i> Lifestyle</h2>
+      <div class="ll-grid">
+        <div class="ll-field-card">
+          <label class="ll-label" for="smoking">Smoking Status</label>
+          <p class="ll-field-desc">Heavy smokers lose ~10 years. Quitting before 40 recovers 90% of risk.</p>
+          <select id="smoking" name="smoking" class="ll-select">
+            <option value="never" selected>Never smoked</option>
+            <option value="former">Former smoker</option>
+            <option value="light">Light (1–9/day)</option>
+            <option value="moderate">Moderate (10–20/day)</option>
+            <option value="heavy">Heavy (20+/day)</option>
+          </select>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="alcohol">Alcohol Consumption</label>
+          <p class="ll-field-desc">Heavy use linked to −4.5 years (GBD 2020).</p>
+          <select id="alcohol" name="alcohol" class="ll-select">
+            <option value="never">None</option>
+            <option value="light" selected>Light (1–2/week)</option>
+            <option value="moderate">Moderate (3–7/week)</option>
+            <option value="heavy">Heavy (8+/week)</option>
+          </select>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="exercise">Exercise Frequency <span class="ll-val-badge" id="exercise-v">3 days/wk</span></label>
+          <p class="ll-field-desc">5+days/wk reduces all-cause mortality by 45% (Arem 2015).</p>
+          <input type="range" id="exercise" name="exercise" min="0" max="7" value="3" class="ll-slider" oninput="syncVal('exercise','exercise-v',v=>v+' days/wk')">
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="sleep">Sleep Duration <span class="ll-val-badge" id="sleep-v">7.0 h</span></label>
+          <p class="ll-field-desc">Optimal 7–8.5h. &lt;6h raises mortality 12% (Cappuccio 2010).</p>
+          <input type="range" id="sleep" name="sleep" min="3" max="12" step="0.5" value="7" class="ll-slider" oninput="syncVal('sleep','sleep-v',v=>v+' h')">
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="stress">Chronic Stress Level <span class="ll-val-badge" id="stress-v">5 / 10</span></label>
+          <p class="ll-field-desc">High chronic stress accelerates telomere shortening (Kivimäki 2012).</p>
+          <input type="range" id="stress" name="stress" min="1" max="10" value="5" class="ll-slider" oninput="syncVal('stress','stress-v',v=>v+' / 10')">
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="social">Social Connection Quality <span class="ll-val-badge" id="social-v">7 / 10</span></label>
+          <p class="ll-field-desc">Strong social ties confer a 50% survival advantage (Holt-Lunstad 2010).</p>
+          <input type="range" id="social" name="social" min="1" max="10" value="7" class="ll-slider" oninput="syncVal('social','social-v',v=>v+' / 10')">
+        </div>
+      </div>
+    </section>
+
+    <!-- NUTRITION -->
+    <section class="ll-section">
+      <h2 class="ll-section-title"><i class="ti ti-salad"></i> Nutrition</h2>
+      <div class="ll-grid">
+        <div class="ll-field-card">
+          <label class="ll-label" for="fv">Fruit & Veg Servings/day <span class="ll-val-badge" id="fv-v">4</span></label>
+          <p class="ll-field-desc">7+ servings → 42% lower mortality (Oyebode, BMJ 2014).</p>
+          <input type="range" id="fv" name="fv" min="0" max="14" value="4" class="ll-slider" oninput="syncVal('fv','fv-v')">
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="processed">Processed Food Frequency</label>
+          <p class="ll-field-desc">4+ servings/day → 62% higher all-cause mortality (NutriNet-Santé 2019).</p>
+          <select id="processed" name="processed" class="ll-select">
+            <option value="rarely" selected>Rarely</option>
+            <option value="sometimes">Sometimes (3–4×/wk)</option>
+            <option value="often">Often (daily)</option>
+            <option value="very_often">Very often (multiple/day)</option>
+          </select>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="bmi">BMI <span class="ll-val-badge" id="bmi-v">23.0</span></label>
+          <p class="ll-field-desc">Optimal 20–25. BMI >35 reduces lifespan 5–10 yrs (Lancet 2016).</p>
+          <input type="range" id="bmi" name="bmi" min="12" max="60" step="0.5" value="23" class="ll-slider" oninput="syncVal('bmi','bmi-v')">
+        </div>
+      </div>
+    </section>
+
+    <!-- HEALTH METRICS -->
+    <section class="ll-section">
+      <h2 class="ll-section-title"><i class="ti ti-heart-rate-monitor"></i> Health Metrics</h2>
+      <div class="ll-grid">
+        <div class="ll-field-card">
+          <label class="ll-label" for="bp">Systolic Blood Pressure <span class="ll-val-badge" id="bp-v">120 mmHg</span></label>
+          <p class="ll-field-desc">Each 10 mmHg reduction above 115 → ~1.5 yr gain (Lewington 2002).</p>
+          <input type="range" id="bp" name="bp" min="70" max="200" value="120" class="ll-slider" oninput="syncVal('bp','bp-v',v=>v+' mmHg')">
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="hr">Resting Heart Rate <span class="ll-val-badge" id="hr-v">68 bpm</span></label>
+          <p class="ll-field-desc">&lt;60 bpm associated with ~1.8 yr longevity gain (Cooney 2010).</p>
+          <input type="range" id="hr" name="hr" min="30" max="130" value="68" class="ll-slider" oninput="syncVal('hr','hr-v',v=>v+' bpm')">
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="conditions">Chronic Conditions</label>
+          <p class="ll-field-desc">Managed conditions reduce life expectancy; lifestyle limits the gap.</p>
+          <select id="conditions" name="conditions" class="ll-select">
+            <option value="none" selected>None</option>
+            <option value="hypertension">Hypertension</option>
+            <option value="diabetes">Type 2 Diabetes</option>
+            <option value="heart_disease">Heart Disease</option>
+            <option value="multiple">Multiple conditions</option>
+          </select>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="family">Family Longevity</label>
+          <p class="ll-field-desc">Parental lifespan &gt;90 linked to FOXO3A protective variants (Pilling 2017).</p>
+          <select id="family" name="family" class="ll-select">
+            <option value="below_70">Parents lived below 70</option>
+            <option value="70_80">70–80 years</option>
+            <option value="80_90" selected>80–90 years</option>
+            <option value="above_90">Above 90 years</option>
+          </select>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="mental">Mental Health Status</label>
+          <p class="ll-field-desc">Severe mental illness → up to 25 yr reduction (Walker, World Psychiatry 2015).</p>
+          <select id="mental" name="mental" class="ll-select">
+            <option value="excellent">Excellent — no issues</option>
+            <option value="good" selected>Good — occasional stress</option>
+            <option value="moderate">Moderate — managed condition</option>
+            <option value="poor">Poor — significant challenges</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENVIRONMENT -->
+    <section class="ll-section">
+      <h2 class="ll-section-title"><i class="ti ti-world"></i> Environment</h2>
+      <div class="ll-grid">
+        <div class="ll-field-card">
+          <label class="ll-label" for="env">Environment Type</label>
+          <p class="ll-field-desc">Urban high-pollution zones reduce life expectancy measurably (Pope 2009).</p>
+          <select id="env" name="env" class="ll-select">
+            <option value="rural">Rural</option>
+            <option value="suburban" selected>Suburban</option>
+            <option value="urban">Urban</option>
+            <option value="high_pollution">Urban high-pollution city</option>
+          </select>
+        </div>
+        <div class="ll-field-card">
+          <label class="ll-label" for="aqi">Regional AQI Average <span class="ll-val-badge" id="aqi-v">45</span></label>
+          <p class="ll-field-desc">WHO safe limit: &lt;15 AQI. Each 10μg/m³ above 35 ≈ −0.6 yr (Pope 2009).</p>
+          <input type="range" id="aqi" name="aqi" min="0" max="500" value="45" class="ll-slider" oninput="syncVal('aqi','aqi-v')">
+        </div>
+      </div>
+    </section>
+
+    <div class="ll-submit-wrap">
+      <button type="button" id="predict-btn" class="ll-btn-predict" onclick="submitPrediction()">
+        <i class="ti ti-dna-2"></i> Reveal My Longevity Prediction
+      </button>
+      <p class="ll-submit-note">Processing takes 2–3 seconds. Results persist in your session history.</p>
+    </div>
+  </form>
+
+  <!-- Loading overlay -->
+  <div id="ll-loading" class="ll-loading-overlay" style="display:none">
+    <div class="ll-loading-card">
+      <div class="ll-spinner"></div>
+      <p class="ll-loading-title">Analysing your biomarkers...</p>
+      <p class="ll-loading-msg" id="ll-load-msg">Applying epidemiological risk coefficients</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+{% endblock %}
